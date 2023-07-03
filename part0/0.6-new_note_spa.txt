@@ -1,0 +1,19 @@
+note over browser:
+User submit a new note and JS-code
+handle it updating and redrawing
+notes list in the browser.
+
+Then it sends the new note to the server
+in JSON format.
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over server:
+Server receive new note, save it and
+responds with HTTP status code 201 to 
+report the resource has been created.
+end note
+
+server-->browser: HTTP status code 201 - Created
+
