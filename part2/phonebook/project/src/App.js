@@ -1,40 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Filter from './components/filter'
 import PersonForm from './components/personform'
 import Persons from './components/persons'
-
-const data = [
-  { 
-    id: 1,
-    name: 'Arto Hellas', 
-    number: '111111111'
-  },
-  { 
-    id: 2,
-    name: 'Alberto Garcia',
-    number: '222222222'
-  },
-  { 
-    id: 3,
-    name: 'Robert Pink',
-    number: '333333333'
-  },
-  { 
-    id: 4,
-    name: 'Peter Robinson',
-    number: '444444444'
-  },
-  { 
-    id: 5,
-    name: 'Alex Brown',
-    number: '555555555'
-  }
-]
+import axios from 'axios'
 
 const App = () => 
 {
-  const [ persons, setPersons ] = useState(data)
-  const [ personsFiltered, setPersonsFiltered ] = useState(data)
+  const [ personsAll, setPersonsAll ] = useState([])
+  const [ personsFiltered, setPersonsFiltered ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filterName, setFilterName] = useState('')
@@ -42,7 +15,8 @@ const App = () =>
   const handleFilterNameChange = (event) => 
   {
     setFilterName(event.target.value)
-    const newPersonsFilt = persons.filter(pers => pers.name.includes(event.target.value))
+    //const newPersonsFilt = personsAll.filter(pers => pers.name.includes(event.target.value))
+    const newPersonsFilt = personsAll.filter(pers => pers.name.toLowerCase().includes(event.target.value.toLowerCase()))
     setPersonsFiltered(newPersonsFilt)
   }
 
@@ -53,7 +27,7 @@ const App = () =>
   {
     event.preventDefault()
 
-    if(persons.some(pers => pers.name === newName || pers.number === newNumber))
+    if(personsAll.some(pers => pers.name === newName || pers.number === newNumber))
     {
       alert(`Name ${newName} or number ${newNumber} are already added to phonebook`)
     }
@@ -61,16 +35,26 @@ const App = () =>
     {
       const newPerson = 
       {
-        id:persons.length+1,
+        id:personsAll.length+1,
         name: newName, 
         number: newNumber
       }
-      setPersons(persons.concat(newPerson))
+      setPersonsAll(personsAll.concat(newPerson))
       setNewName('')
       setNewNumber('')
       setFilterName('')
     }
 }
+
+  useEffect( () => 
+  {
+    console.log('Execute effect')
+    axios.get('http://localhost:3001/persons').then(response =>
+    {
+      setPersonsAll(response.data)
+      setPersonsFiltered(response.data)
+    })
+  }, [])
 
   return (
     <div>
