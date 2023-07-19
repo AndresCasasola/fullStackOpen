@@ -1,9 +1,10 @@
-const Filter = ({filterName, handleFilterNameChange}) => 
-{
+const Filter = ({filterName, handleFilterNameChange}) => {
   return(
     <div>
-        <p>Filter with</p>
-        <input value={filterName} onChange={handleFilterNameChange}/>
+        <p style={{ textIndent: "20px" }}>Filter with</p>
+        <div style={{ textIndent: "20px" }}>
+          <input value={filterName} onChange={handleFilterNameChange}/>
+        </div>
     </div>
     )
 }

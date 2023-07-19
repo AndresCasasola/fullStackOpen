@@ -1,5 +1,4 @@
-const PersonForm = (props) => 
-{
+const PersonForm = (props) => {
   const { newName,
           handleNameChange,
           newNumber,
@@ -8,10 +7,11 @@ const PersonForm = (props) =>
 
   return(
     <form>
-      <h2>Add a new</h2>
-      <div>Name:   <input value={newName} onChange={handleNameChange}/></div>
-      <div>Number: <input value={newNumber} onChange={handleNumberChange}/></div>
-      <div><button type="submit" onClick={handleSubmit}>Add</button></div>
+      <h2 style={{ textIndent: "10px" }}>Add a new</h2>
+      <div style={{ textIndent: "20px" }}>Name:   <input value={newName} onChange={handleNameChange}/></div>
+      <div style={{ textIndent: "20px" }}>Number: <input value={newNumber} onChange={handleNumberChange}/></div>
+      <br></br>
+      <div style={{ textIndent: "20px" }}><button type="submit" onClick={handleSubmit}>Send</button></div>
     </form>
     )
 }
