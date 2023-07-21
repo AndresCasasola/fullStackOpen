@@ -1,21 +1,34 @@
+import './App.css'
 import React, { useState, useEffect } from 'react'
 import Filter from './components/filter'
 import PersonForm from './components/personform'
 import PersonsView from './components/personsview'
+import Notification from './components/notification'
 import personsService from './services/persons'
+
 
 const App = () => {
   const [ personsAll, setPersonsAll ] = useState([])
   const [ personsFiltered, setPersonsFiltered ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
-  const [ filterName, setFilterName] = useState('')
-  
+  const [ filterName, setFilterName ] = useState('')
+  const [ infoMsgData, setInfoMsgData ] = useState( { msg: 'Empty', color: 'dimgrey' } )
+
   const fetchPersonsFromServer = () => {
-    personsService.getAll().then(initPersons => {
-      setPersonsAll(initPersons)
-      setPersonsFiltered(personsAll.filter(pers => pers.name.toLowerCase().includes(filterName.toLowerCase())))
-    })
+    personsService
+      .getAll()
+      .then(initPersons => {
+        setPersonsAll(initPersons)
+        setPersonsFiltered(personsAll.filter(pers => pers.name.toLowerCase().includes(filterName.toLowerCase())))
+      })
+      .catch( error => {
+        console.error('Error: ', error)
+        setInfoMsg2Sec({
+          msg: `Error fetching from server`,
+          color: 'red'
+        })
+      })
   }
 
   const handleFilterNameChange = (event) => setFilterName(event.target.value)
@@ -25,6 +38,11 @@ const App = () => {
   const personNumberIsDifferent = () => personsAll.some(pers => pers.name === newName && pers.number !== newNumber)
   const userConfirmUpdateNumber = () => window.confirm(`"${newName}" is already registered. Do your want to update the number from "${personsAll.find(pers => pers.name === newName).number}" to "${newNumber}"?`)
   
+  const setInfoMsg2Sec = (msgData) => {
+    setInfoMsgData(msgData)
+    setTimeout(() => setInfoMsgData({ msg: 'Empty', color: 'dimgrey' }), 4000)
+  }
+  
   const updatePersonNumber = () => {
     const person = personsAll.find(pers => pers.name === newName)
     const changedPerson = {...person, number: newNumber}
@@ -32,11 +50,18 @@ const App = () => {
       .updatePerson(person.id, changedPerson)
       .then(updatedPerson => {
         setPersonsAll(personsAll.map(pers => pers.name === newName ? updatedPerson : pers))
+        setInfoMsg2Sec({
+          msg: `"Number of "${newName}" updated to "${newNumber}" :)`,
+          color: 'green'
+        })
       })
       .catch(error => {
-        alert(`There was an error updating number: ${error}`)
+        console.error('Error: ', error)
+        setInfoMsg2Sec({
+          msg: `There was an error updating number: ${error}`,
+          color: 'red'
+        })
       })
-    alert(`"Number of "${newName}" updated to "${newNumber}" :)`)
   }
 
   const createPerson = () => {
@@ -52,20 +77,38 @@ const App = () => {
         setNewName('')
         setNewNumber('')
         setFilterName('')
+        setInfoMsg2Sec({
+          msg: `"${newName}" added!`,
+          color: 'green'
+        })
       })
       .catch(error => {
-        alert(`There was an error adding ${newPersonObject.name}`)
+        console.error('Error: ', error)
+        setInfoMsg2Sec({
+          msg: `There was an error adding ${newPersonObject.name}`,
+          color: 'red'
+        })
       })
   }
 
   const deletePerson = (id) => {
-    console.log('Deleting person with id: ', id)
     const person = personsAll.find(pers => pers.id === id)
     if(window.confirm(`Do you really want to delete ${person.name}?`)){
       personsService
         .deletePerson(id)
-        .then(deletedPerson => {
+        .then( resp => {
           setPersonsAll(personsAll.filter(pers => pers.id !== id))
+          setInfoMsg2Sec({
+            msg: `"${person.name}" deleted!`,
+            color: 'green'
+          })
+        })
+        .catch( error => {
+          console.error('Error: ', error)
+          setInfoMsg2Sec({
+            msg: `There was an error deleting ${person.name}`,
+            color: 'red'
+          })
         })
     }
   }
@@ -81,7 +124,10 @@ const App = () => {
           return
         updatePersonNumber()
       }else{
-        alert(`"${newNumber}" is the current number for "${newName}". Pick another :)`)
+        setInfoMsg2Sec({
+          msg: `"${newNumber}" is the current number for "${newName}". Pick another :)`,
+          color: 'darkgoldenrod'
+        })
       }
     }else{
       createPerson()
@@ -96,6 +142,7 @@ const App = () => {
   return (
     <div>
       <h2 style={{ textIndent: "10px" }}>Phonebook</h2>
+      <Notification msgData={infoMsgData}/>
       <Filter filterName={filterName} handleFilterNameChange={handleFilterNameChange}/>
       <PersonForm 
         newName={newName}
@@ -108,4 +155,4 @@ const App = () => {
   )
 }
 
-export default App
+export default App;
