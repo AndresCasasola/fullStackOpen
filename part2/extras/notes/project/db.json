@@ -47,6 +47,12 @@
       "content": "Nueva nota  del 18 de julio",
       "date": "2023-07-18T11:00:47.175Z",
       "important": true
+    },
+    {
+      "id": 10,
+      "content": "This is the new one",
+      "date": "2023-07-21T09:49:10.514Z",
+      "important": false
     }
   ]
 }
